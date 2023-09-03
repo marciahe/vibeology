@@ -3,18 +3,25 @@
     ✨ Vibeology ✨
   </h1>
   <div class="flex flex-col text-center">
-
+    <ul class="text-8xl flex inline">
+      <li>😃</li>
+      <li>🙂</li>
+      <li>😶</li>
+      <li>🙁</li>
+      <li>😭</li>
+    </ul>
   </div>
 </main>
 
-<style lang="postcss">
-  /* :global(html) {
-    background-color: theme(colors.gray.100);
-  } */
+<style lang="css">
   main {
     display: flex;
     align-items: center;
     flex-direction: column;
     margin-top: 30px;
+  }
+  main ul li{
+    /* display: inline; */
+    padding: 30px;
   }
 </style>
