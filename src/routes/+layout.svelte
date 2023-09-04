@@ -2,11 +2,15 @@
   import "../app.css";
   import { createClient } from '@supabase/supabase-js';
   import { onMount } from 'svelte';
+  import { supabaseClient, sessionId } from '../store';
+  import { v4 as uuidv4 } from 'uuid';
 
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
   let supabase;
+  // let sessionId;
+
 
   onMount(()=>{
     supabase = createClient(supabaseUrl, supabaseKey, {
@@ -14,6 +18,16 @@
         localStorage: window.localStorage,
     });
 
+    const localSessionId = localStorage.getItem('session_id');
+    if (!localSessionId) {
+      const newSessionId = uuidv4();
+      sessionId.set(uuidv4());
+      localStorage.setItem('session_id', $sessionId);
+    } else {
+      sessionId.set(localSessionId);
+    }
+
+    supabaseClient.set(supabase);
     fetchVibes();
 
   });
