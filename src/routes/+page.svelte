@@ -1,15 +1,18 @@
 <script>
   import { supabaseClient, sessionId } from '../store'; 
   import { get } from 'svelte/store';
+  import { getFeedback } from '../utils/utils';
 
   const emotions = ['0', '10', '20', '30', '40'];
 
   let selectedEmotion = null;
   let entryText = "";
   let currentSessionId;
+
   sessionId.subscribe(value => {
     currentSessionId = value;
   });
+
 
   async function submitData() {
     const supabase = get(supabaseClient);
@@ -17,16 +20,22 @@
       const { data, error } = await supabase
         .from('VibeEntries')
         .insert([
-          { vibe_id: selectedEmotion, entry_text: entryText, session_id: currentSessionId }
+          { vibe_id: selectedEmotion, 
+            entry_text: entryText, 
+            session_id: currentSessionId 
+          }
         ]);
 
       if (error) {
         console.error(sessionId + "Error al insertar en Supabase:", error);
       } else {
-        console.log("Datos insertados exitosamente:", data);
+        console.log("Datos insertados exitosamente:");
       }
     }
+
+    getFeedback(entryText)
   }
+
 </script>
 
 <main>
@@ -42,7 +51,7 @@
     {/each}
   </div>
 
-<!-- Campo para texto del diario -->
+
 <h1 class="mt-10 mb-2">Ingresa el texto para tu diario</h1>
 <textarea 
   bind:value={entryText}
@@ -58,6 +67,7 @@
 >
   Enviar
 </button>
+
 </main>
 
 <style lang="css">

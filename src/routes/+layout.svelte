@@ -5,18 +5,17 @@
   import { supabaseClient, sessionId } from '../store';
   import { v4 as uuidv4 } from 'uuid';
 
-
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
   let supabase;
-  // let sessionId;
-
 
   onMount(()=>{
-    supabase = createClient(supabaseUrl, supabaseKey, {
-      persistSession: true,
+    if (!supabase) {
+      supabase = createClient(supabaseUrl, supabaseKey, {
+        persistSession: true,
         localStorage: window.localStorage,
-    });
+      });
+    }
 
     const localSessionId = localStorage.getItem('session_id');
     if (!localSessionId) {
@@ -28,22 +27,24 @@
     }
 
     supabaseClient.set(supabase);
-    fetchVibes();
+    // fetchVibes();
 
   });
 
-async function fetchVibes() {
-  const { data, error } = await supabase
-    .from('Vibes')
-    .select('*');
 
-  if (error) {
-    console.error('Error fetching data:', error);
-    return;
-  }
 
-  console.log('Fetched data:', data);
-}
+
+//Return vibes
+// async function fetchVibes() {
+//   const { data, error } = await supabase
+//     .from('Vibes')
+//     .select('*');
+//   if (error) {
+//     console.error('Error fetching data:', error);
+//     return;
+//   }
+//   console.log('Fetched data:', data);
+// }
 
 
 

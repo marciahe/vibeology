@@ -28,6 +28,8 @@
 declare module '$env/static/private' {
 	export const VITE_SUPABASE_URL: string;
 	export const VITE_SUPABASE_KEY: string;
+	export const VITE_OPENAI_URL: string;
+	export const VITE_OPENAI_KEY: string;
 	export const NVM_INC: string;
 	export const TERM_PROGRAM: string;
 	export const NODE: string;
@@ -114,6 +116,8 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		VITE_SUPABASE_URL: string;
 		VITE_SUPABASE_KEY: string;
+		VITE_OPENAI_URL: string;
+		VITE_OPENAI_KEY: string;
 		NVM_INC: string;
 		TERM_PROGRAM: string;
 		NODE: string;
