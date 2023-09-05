@@ -2,8 +2,17 @@
   import { supabaseClient, sessionId } from '../store'; 
   import { get } from 'svelte/store';
   import { getFeedback } from '../utils/utils';
+  import { insert } from 'svelte/internal';
 
-  const emotions = ['0', '10', '20', '30', '40'];
+  const emotions = [
+    { image: '/face/0.png', description: 'Increíble' },
+    { image: '/face/10.png', description: 'Bien' },
+    { image: '/face/20.png', description: 'Meh' },
+    { image: '/face/30.png', description: 'Mal' },
+    { image: '/face/40.png', description: 'Horrible' },
+
+  ];
+
 
   let selectedEmotion = null;
   let entryText = "";
@@ -16,38 +25,59 @@
 
   async function submitData() {
     const supabase = get(supabaseClient);
+    let insertedData = null;
     if (selectedEmotion && entryText && supabase) {
       const { data, error } = await supabase
-        .from('VibeEntries')
-        .insert([
-          { vibe_id: selectedEmotion, 
-            entry_text: entryText, 
-            session_id: currentSessionId 
-          }
-        ]);
-
+      .from('VibeEntries')
+      .insert([
+        { vibe_id: selectedEmotion, 
+          entry_text: entryText, 
+          session_id: currentSessionId 
+        }
+      ])
+      .select();
+      
       if (error) {
-        console.error(sessionId + "Error al insertar en Supabase:", error);
+        console.error(sessionId + "Error inserting in DB:", error);
       } else {
-        console.log("Datos insertados exitosamente:");
+        console.log(data, error)
+        insertedData = data[0];
+        console.log("Success inserting in DB: ");
       }
     }
+    const id = insertedData.id;
+    const feedback = await getFeedback(entryText);
 
-    getFeedback(entryText)
+      if ( feedback) {
+        const { data: updateData, error: updateError } = await supabase
+          .from('VibeEntries')
+          .update({ feedback })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error("Error updating in DB:", updateError);
+        } else {
+          console.log("Success updating feedback in DB", updateData);
+        }
+      }
   }
 
 </script>
 
 <main>
-  <h1 class="text-4xl font-bold p-12">
-    ✨ Vibeology ✨
-  </h1>
-<h2 class="text-2xl font-bold">Selecciona tu estado de ánimo</h2>
-<div class="flex">
-{#each emotions as emotion}
-    <button class="button {selectedEmotion === emotion ? 'active' : ''}" on:click={() => { selectedEmotion = emotion; }}>
+  <!-- <h1 class="text-4xl font-bold p-12">✨ Vibeology ✨</h1> -->
+  <h1 class="typo">vibeology</h1>
+  <h2 class="text-2xl font-bold">Selecciona tu estado de ánimo</h2>
+  <div class="flex">
+    <!-- {#each emotions as emotion}
+      <button class="button {selectedEmotion === emotion ? 'active' : ''}" on:click={() => { selectedEmotion =  emotion; }}>
       {emotion}
-    </button>
+     </button>
+    {/each} -->
+    {#each emotions as emotion}
+      <button class="button {selectedEmotion === emotion ? 'active' : ''}" on:click={() => { selectedEmotion = emotion; }}>
+        <img src="{emotion.image}" alt="{emotion.description}" />
+      </button>
     {/each}
   </div>
 
@@ -80,10 +110,36 @@
     .button {
     padding: 10px;
     margin: 5px;
-    border: 1px solid #ccc;
+
     cursor: pointer;
   }
   .active {
     background-color: #ccc;
   }
+
+
+  /* @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap'); */
+
+.typo{
+	font-family: 'Righteous', cursive;
+	font-size:4rem;
+	display:inline-block;
+	font-weight: bold;
+	letter-spacing:2px;
+
+	position:relative;
+	color:#f3395a;
+	transform: skew(-5deg,-5deg) rotate(5deg);
+	transform-origin:center center;
+	text-shadow: 	1px 1px #d10e31,
+								2px 2px #d10e31,
+								3px 3px #d10e31,
+								4px 4px #d10e31,
+								5px 5px #d10e31,
+								6px 6px #d10e31,
+								7px 7px #d10e31,
+								8px 8px #890920,
+								9px 9px #890920,
+								10px 10px #890920;
+}
 </style>
