@@ -7,7 +7,7 @@
   let currentYear = today.getFullYear();
   let days = [];
 
-  onMount(() => {
+  onMount(async() => {
     generateCalendar(currentMonth, currentYear);
   });
 
@@ -55,6 +55,8 @@
     currentYear = today.getFullYear();
     generateCalendar(currentMonth, currentYear);
   }
+  
+  
 </script>
 
 <div class="flex flex-col items-center">

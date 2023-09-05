@@ -27,14 +27,34 @@
     }
 
     supabaseClient.set(supabase);
-    // fetchVibes();
+
+    fetchEntries();
+
+
 
   });
 
 
+  async function fetchEntries() {
+      let currentSessionId;
+      sessionId.subscribe(value => {
+        currentSessionId = value;
+      });
+    console.log(currentSessionId)
+    let userData = null;
+    const { data, error } = await supabase
+      .from('VibeEntries')
+      .select()
+      .eq('session_id', currentSessionId);
 
+    if (error) {
+      console.error('Error fetching data:', error);
+      return;
+    } else {
+      console.log('Fetched data:', data);
+    }
+  }
 
-//Return vibes
 // async function fetchVibes() {
 //   const { data, error } = await supabase
 //     .from('Vibes')
