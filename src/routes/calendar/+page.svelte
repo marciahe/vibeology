@@ -55,13 +55,11 @@ userData.subscribe(value => {
     }
     updateDayColors();
     getMonthlyFeedback();
-
-
   }
 
   function selectDay(day) {
     if (day) {
-      console.log(`Día seleccionado: ${day.getDate()}`);
+      // console.log(`Día seleccionado: ${day.getDate()}`);
 
       selectedDayData = currentUserData.filter(entry => {
       const entryDate = new Date(entry.created_at);
@@ -69,8 +67,8 @@ userData.subscribe(value => {
              entryDate.getMonth() === day.getMonth() &&
              entryDate.getFullYear() === day.getFullYear();
     });
+    document.getElementById("days").scrollIntoView({ behavior: 'smooth' });
 
-    console.log("Datos del día seleccionado:", selectedDayData);
     }
   }
 
@@ -129,24 +127,15 @@ async function getMonthlyFeedback() {
   const averageVibe = totalVibe / thisMonthEntries.length;
 
   monthlyFeedback = await getGeneralFeedback(averageVibe);
-  // monthlyFeedback = tempFeedback;
 
 }
-
 
   
 </script>
 
 
-<div class="flex flex-col items-center">
-  <div class="mt-4">
-    <h2 class="text-xl font-bold mb-2">Retroalimentación Mensual:</h2>
-    <div class="bg-white p-4 rounded shadow-lg">
-      <p>{monthlyFeedback || 'Cargando...'}</p>
-    </div>
-  </div>
-
-  <h1 class="text-2xl font-bold mb-4"> {monthNames[currentMonth]} / {currentYear}</h1>
+<div class="flex flex-col items-center mt-6">
+  <h1 class="text-2xl font-bold mb-4"> {monthNames[currentMonth]} {currentYear}</h1>
   <div class="flex mb-4">
     <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2" on:click={prevMonth}>Mes anterior</button>
     <button class="bg-blue-500 text-white px-4 py-2 rounded ml-2" on:click={nextMonth}>Mes siguiente</button>
@@ -165,15 +154,23 @@ async function getMonthlyFeedback() {
       </div>
     {/each}
   </div>
+  <div class="mt-4 max-w-2xl">
+    <div class="bg-orange-200 p-4 mb-2 rounded shadow-lg ">
+      <p>{monthlyFeedback || 'Cargando...'}</p>
+    </div>
+  </div>
 </div>
 
 
-<div class="flex flex-wrap mt-4"> 
+{#if selectedDayData.length > 0}
+  <h2 id="titleVibes" class="text-lg font-bold text-center mt-4">Tus vibes del día seleccionado:</h2>
+{/if}
+<div id="days" class="flex flex-wrap justify-center mb-40"> 
   {#each selectedDayData as data}
-    <div class="bg-white p-4 m-2 rounded shadow-lg w-full sm:w-1/2 lg:w-1/3 xl:w-1/4"> 
+    <div class="bg-white p-6 m-2 rounded shadow-md w-full sm:w-1/2 lg:w-1/3 xl:w-1/4"> 
       <p><strong>Fecha:</strong> {new Date(data.created_at).toLocaleDateString()}</p>
       <p><strong>Vibe ID:</strong> {data.vibe_id === 40 ? "Vibe 1" : "Vibe 2"}</p>
-      <p><strong>Texto de la entrada:</strong> {data.entry_text}</p>
+      <p><strong>Tu diario:</strong> {data.entry_text}</p>
       <p><strong>Vibeology:</strong> {data.feedback === null ? ":(" : data.feedback}</p>
     </div>
   {/each}
