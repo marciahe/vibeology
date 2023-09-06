@@ -101,7 +101,6 @@
       vibe_id: getRandomFromArray([0, 10, 20, 30, 40]),
       entry_text: getRandomFromArray(["Bien", "Muy Bien", "Excelente", "Masomenos", "Regular", "Mal", "Muy mal"]),
       created_at: getRandomDate(),
-      // Asegúrate de que currentSessionId está definido en tu código
       session_id: currentSessionId 
     }));
 
@@ -120,7 +119,6 @@
 </script>
 
 <main>
-  <h1 class="typo mb-6">✨vibeology</h1>
   <h2 class="text-xl mt-8 font-bold text-slate-700">Selecciona tu estado de ánimo:</h2>
   <div class="flex w-5/6 max-w-[800px]">
     {#each emotions as emotion}
@@ -180,26 +178,4 @@
     border-radius: 100%;
   }
 
-  .typo{
-    font-family: 'Righteous', cursive;
-    font-size:4rem;
-    display:inline-block;
-    font-weight: bold;
-    letter-spacing:2px;
-
-    position:relative;
-    color:#f3395a;
-    transform: skew(-5deg,-5deg) rotate(5deg);
-    transform-origin:center center;
-    text-shadow: 	1px 1px #d10e31,
-                  2px 2px #d10e31,
-                  3px 3px #d10e31,
-                  4px 4px #d10e31,
-                  5px 5px #d10e31,
-                  6px 6px #d10e31,
-                  7px 7px #d10e31,
-                  8px 8px #890920,
-                  9px 9px #890920,
-                  10px 10px #890920;
-}
 </style>
