@@ -44,8 +44,6 @@
     ])
     .select();
 
-    console.log("Data:", data);
-    console.log("Error:", error);
 
     if (error) {
       console.error(sessionId + " Error inserting in DB:", error);
@@ -55,7 +53,7 @@
 
     if(data) {
       insertedData = data[0];
-      console.log("Inserted Data:", insertedData);
+      // console.log("Inserted Data:", insertedData);
     } else {
       console.log("Data is null");
     }
@@ -74,7 +72,7 @@
       if (updateError) {
         console.error("Error updating in DB:", updateError);
       } else {
-        console.log("Success updating feedback in DB", updateData);
+        // console.log("Success updating feedback in DB", updateData);
       }
     }
     isLoading = false;
@@ -103,8 +101,6 @@
       created_at: getRandomDate(),
       session_id: currentSessionId 
     }));
-
-    console.log(fakeEntries);
 
     const { error } = await supabase
       .from('VibeEntries')

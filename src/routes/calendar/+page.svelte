@@ -107,10 +107,6 @@ userData.subscribe(value => {
 
 
 async function getMonthlyFeedback() {
-  if (!currentUserData) {
-    console.log("Nohay o hay")
-    return
-  }
 
   const thisMonthEntries = currentUserData.filter(entry => {
     const entryDate = new Date(entry.created_at);

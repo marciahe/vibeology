@@ -39,7 +39,6 @@
       sessionId.subscribe(value => {
         currentSessionId = value;
       });
-    console.log(currentSessionId)
     const { data, error } = await supabase
       .from('VibeEntries')
       .select()

@@ -29,8 +29,6 @@ export async function getFeedback(entry) {
     }
 
     const data = await response.json();
-    //   console.log(prompt + entry);
-    console.log("Retroalimentación:", data.choices[0].message.content);
     return data.choices[0].message.content;
   } catch (error) {
     console.error("Ocurrió un error:", error);
@@ -68,7 +66,6 @@ export async function getGeneralFeedback(entry) {
     }
 
     const data = await response.json();
-    // console.log("Qué dice este?", data.choices[0].message.content);
     return data.choices[0].message.content;
   } catch (error) {
     console.error("Ocurrió un error:", error);
