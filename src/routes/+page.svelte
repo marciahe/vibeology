@@ -2,7 +2,6 @@
   import { supabaseClient, sessionId } from '../store'; 
   import { get } from 'svelte/store';
   import { getFeedback } from '../utils/utils';
-  // import { insert } from 'svelte/internal';
 
   const emotions = [
     { id: 0, image: '/face/0.png', description: 'Increíble' },
@@ -12,18 +11,25 @@
     { id: 40, image: '/face/40.png', description: 'Horrible' },
   ];
 
-
-
   let selectedEmotion = null;
   let entryText = "";
   let currentSessionId;
+  let feedbackText = "";
+  let isLoading = false;
 
   sessionId.subscribe(value => {
     currentSessionId = value;
   });
 
+  let canSubmit = false;
+  $: {
+    canSubmit = selectedEmotion !== null && entryText.length >= 3;
+  }
+
+
 
   async function submitData() {
+    isLoading = true;
   const supabase = get(supabaseClient);
 
   let insertedData = null;
@@ -57,8 +63,9 @@
 
     const id = insertedData.id;
     const feedback = await getFeedback(entryText);
+    feedbackText = feedback;
 
-    if ( feedback) {
+    if (feedback) {
       const { data: updateData, error: updateError } = await supabase
         .from('VibeEntries')
         .update({ feedback })
@@ -70,17 +77,52 @@
         console.log("Success updating feedback in DB", updateData);
       }
     }
+    isLoading = false;
   }
 }
 
 
+  export async function generateBulkData() {
+    const supabase = get(supabaseClient);
+
+    function getRandomFromArray(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getRandomDate() {
+      const today = new Date();
+      const threeMonthsAgo = new Date(today);
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      const randomDate = new Date(threeMonthsAgo.getTime() + Math.random() * (today.getTime() - threeMonthsAgo.getTime()));
+      return randomDate.toISOString().split('.')[0] + "+00";
+    }
+
+    const fakeEntries = Array.from({ length: 50 }, (_, i) => ({
+      vibe_id: getRandomFromArray([0, 10, 20, 30, 40]),
+      entry_text: getRandomFromArray(["Bien", "Muy Bien", "Excelente", "Masomenos", "Regular", "Mal", "Muy mal"]),
+      created_at: getRandomDate(),
+      // Asegúrate de que currentSessionId está definido en tu código
+      session_id: currentSessionId 
+    }));
+
+    console.log(fakeEntries);
+
+    const { error } = await supabase
+      .from('VibeEntries')
+      .insert(fakeEntries);
+
+    if (error) {
+      console.error('Error insertando datos:', error);
+    } else {
+      console.log('Datos ficticios insertados exitosamente.');
+    }
+  }
 </script>
 
 <main>
-  <!-- <h1 class="text-4xl font-bold p-12">✨ Vibeology ✨</h1> -->
-  <h1 class="typo">vibeology</h1>
-  <h2 class="text-2xl font-bold">Selecciona tu estado de ánimo</h2>
-  <div class="flex">
+  <h1 class="typo mb-6">✨vibeology</h1>
+  <h2 class="text-xl mt-8 font-bold text-slate-700">Selecciona tu estado de ánimo:</h2>
+  <div class="flex w-5/6 max-w-[800px]">
     {#each emotions as emotion}
       <button class="button {selectedEmotion === emotion ? 'active' : ''}" on:click={() => { selectedEmotion = emotion; }}>
         <img src="{emotion.image}" alt="{emotion.description}" />
@@ -88,22 +130,37 @@
     {/each}
   </div>
 
+  <h1 class="text-xl font-bold mt-8 mb-4 text-slate-700">Ingresa el texto para tu diario:</h1>
+  <textarea 
+    bind:value={entryText}
+            class="h-full min-h-[100px] w-5/6 max-w-[700px] resize-none rounded-[7px] border border-blue-gray-200  bg-transparent px-3 py-2.5 font-sans text-lg font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-blue-500 focus:outline-0 disabled:resize-none disabled:border-0 disabled:bg-blue-gray-50"
 
-<h1 class="mt-10 mb-2">Ingresa el texto para tu diario</h1>
-<textarea 
-  bind:value={entryText}
-          class="h-full min-h-[100px] w-96 resize-none rounded-[7px] border border-blue-gray-200  bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-blue-500 focus:outline-0 disabled:resize-none disabled:border-0 disabled:bg-blue-gray-50"
+      rows="3"
+      placeholder="¿Cómo te has sentido hoy?"
+  ></textarea>
 
-    rows="3"
-    placeholder="¿Cómo te has sentido hoy?"
-></textarea>
+  <button 
+    on:click={submitData}
+    class="mt-4 w-5/6 max-w-[700px] h-12 py-2 px-4 rounded font-bold text-lg transition-all duration-300
+    {canSubmit ? 'bg-emerald-300 hover:bg-emerald-400 text-black' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}"
+    disabled={!canSubmit}
+  >
+    
+      {#if isLoading}
+        Cargando...
+      {:else}
+        Enviar
+      {/if}
+  </button>
 
-<!-- Botón para enviar los datos -->
-<button on:click={submitData}
-  class= "mt-4 w-96 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
->
-  Enviar
-</button>
+  {#if feedbackText}
+    <div class="p-4 rounded shadow-md max-w-[700px] mt-8 bg-orange-200">
+      <p class=" text-xl">{feedbackText}</p>
+    </div>
+  {/if}
+
+
+  <button class="bg-red-300 hover:bg-red-400 px-8 py-2 rounded bottom-4 fixed" on:click={generateBulkData}>Generar 50 entradas ficticias</button>
 
 </main>
 
@@ -112,39 +169,37 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    margin-top: 30px;
   }
     .button {
     padding: 10px;
     margin: 5px;
-
     cursor: pointer;
   }
   .active {
-    background-color: #ccc;
+    background-color: rgb(110 231 183);
+    border-radius: 100%;
   }
 
+  .typo{
+    font-family: 'Righteous', cursive;
+    font-size:4rem;
+    display:inline-block;
+    font-weight: bold;
+    letter-spacing:2px;
 
-.typo{
-	font-family: 'Righteous', cursive;
-	font-size:4rem;
-	display:inline-block;
-	font-weight: bold;
-	letter-spacing:2px;
-
-	position:relative;
-	color:#f3395a;
-	transform: skew(-5deg,-5deg) rotate(5deg);
-	transform-origin:center center;
-	text-shadow: 	1px 1px #d10e31,
-								2px 2px #d10e31,
-								3px 3px #d10e31,
-								4px 4px #d10e31,
-								5px 5px #d10e31,
-								6px 6px #d10e31,
-								7px 7px #d10e31,
-								8px 8px #890920,
-								9px 9px #890920,
-								10px 10px #890920;
+    position:relative;
+    color:#f3395a;
+    transform: skew(-5deg,-5deg) rotate(5deg);
+    transform-origin:center center;
+    text-shadow: 	1px 1px #d10e31,
+                  2px 2px #d10e31,
+                  3px 3px #d10e31,
+                  4px 4px #d10e31,
+                  5px 5px #d10e31,
+                  6px 6px #d10e31,
+                  7px 7px #d10e31,
+                  8px 8px #890920,
+                  9px 9px #890920,
+                  10px 10px #890920;
 }
 </style>

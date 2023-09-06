@@ -181,18 +181,18 @@ async function getMonthlyFeedback() {
 
 <style>
   .color-0 {
-  background-color: red;
+  background-color: #ffda21;
   }
   .color-10 {
-  background-color: yellow;
+  background-color: rgb(255, 152, 41);
   }
   .color-20 {
-  background-color: orange;
+  background-color: rgb(159, 4, 226);
   }
   .color-30 {
-    background-color: green;
+    background-color: rgb(0, 246, 185);
   }
   .color-40 {
-    background-color: blue;
+    background-color: rgb(26, 118, 255);
   }
 </style>
