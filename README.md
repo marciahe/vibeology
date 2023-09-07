@@ -1,8 +1,8 @@
-# **✨Viveology** | Monoku: prueba técnica
+# **✨Vibeology** | Monoku: prueba técnica
 
 ## **📌 Descripción**
 
-Prueba técnic para la vacante de Desarrollador(a) Junior 2023
+Prueba técnica para la vacante de Desarrollador(a) Junior 2023
 Versión simplificada de una aplicación similar a Daylio, que incluirá un par de pantallas, visualizaciones y la integración con la API de OpenAI para el análisis de sentimientos. La aplicación se enfocará en rastrear y analizar el estado de ánimo del usuario.
 
 ### Requerimientos
